@@ -2,18 +2,34 @@
 <?php
 
 function importCSV2DB($csvFile, $tbName, $delimiter = ',' , $columNames = FALSE){
+    if(!file_exists($csvFile)){
+        return FALSE;
+    }
     $handle = fopen($csvFile, 'r');
+    $pdo = new PDO('mysql:host='. HOST . ';dbname=' . DB, USER, PASSWORD);
     if($columNames === FALSE){
     $columNames = fgetcsv($handle, 0, $delimiter, '"');
     } 
-    $z = 0;
+    $cols = implode(',', $columNames);
+    $vals = [];
+    for ($i = 0; $i < count($columNames); $i++) {
+        $tmp[] = '?';
+    }
+    $vals = implode(',', $tmp);
+    
+    $query = "INSERT INTO tb_cities($cols) VALUES ($vals)";
+    $stmt = $pdo->prepare($query);
+    
+//    $z = 0;
     while(($row = fgetcsv($handle, 0, $delimiter, '"')) !==FALSE){
-        $z++;
-        printf('%s. Stadt: %s <br>',$z,$row[0]);
+        for ($i = 0; $i < count($row); $i++) {
+            $stmt->bindParam($i+1, $row[$i], PDO::PARAM_STR);
+        }
+        $stmt->execute();
+//        $z++;
+//        printf('%s. Stadt: %s <br>',$z,$row[0]);
     }
 }
-
-
 
 
 require_once 'config.php';
@@ -55,29 +71,7 @@ if($do === 'import'){
         <div class="container">
             <h1>Import einer CSV Datei</h1>
             <hr>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>id</th>
-                        <th>City</th>
-                        <th>City_ascii</th>
-                        <th>lat</th>
-                        <th>lng</th>
-                        <th>pop</th>
-                        <th>Country</th>
-                        <th>iso2</th>
-                        <th>iso3</th>
-                        <th>Province</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
+            
         </div>
         <hr>
         <form method="post" class="form-control">

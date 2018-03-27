@@ -1,9 +1,20 @@
+<?php
+require_once './config.php';
+
+function getAllData($tblName, $columnNames = ['*']) {
+    $pdo = new PDO('mysql:host=' . HOST . ';dbname=' . DB, USER, PASSWORD);
+    $cols = implode(',', $columnNames);
+    $query = "SELECT $cols FROM $tblName";
+    $stmt = $pdo->query($query);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $rows;
+}
+
+$columnNames = ['country', 'province', 'city', 'pop'];
+$rows = getAllData('tb_cities', $columnNames);
+?>
+
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
         <meta charset="UTF-8">
@@ -18,20 +29,24 @@ and open the template in the editor.
     </head>
     <body>
         <div class="container">
-            <table>
+            <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th></th>
-                        <th></th>
-                        <th></th>
+                        
+                        <th>Land</th>
+                        <th>Region</th>
+                        <th>Stadt</th>
+                        <th>Einwohner</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
+                    <?php foreach ($rows as $row) : ?>
+                        <tr>
+                            <?php foreach ($row as $val) : ?>
+                                <td><?php echo $val; ?></td>
+                            <?php endforeach; ?>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -41,6 +56,7 @@ and open the template in the editor.
         </div>
         <pre>
 <?php
+
 ?>
         </pre>
         
