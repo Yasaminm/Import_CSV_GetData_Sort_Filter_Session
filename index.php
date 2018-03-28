@@ -1,7 +1,7 @@
 <?php
 session_start();
 if(!isset($_SESSION['prevOrderCol'])){
-    $_SESSION['prevorderCol'] = ' ';
+    $_SESSION['prevOrderCol'] = ' ';
 }
 
 require_once './config.php';
@@ -22,14 +22,9 @@ $columnNames = ['country', 'province', 'city', 'pop'];
 $orderCol = filter_input(1, 'order', 513);
 if ($orderCol) {
     $_SESSION['$orderCol'] = $orderCol;
-}elseif(!isset ($_SESSION['orderCol'])){
+}elseif (!isset ($_SESSION['$orderCol'])){
     $_SESSION['$orderCol'] = 'country';
-    
 }
-
-
-$_SESSION[$orderCol] = ($orderCol) ? $orderCol : 'country';
-
 
 //if(isset($orderCol)){ 
 //$rows = getAllData('tb_cities', $columnNames, [$orderCol]);
@@ -39,16 +34,16 @@ $_SESSION[$orderCol] = ($orderCol) ? $orderCol : 'country';
 
 //sort
 $sort = filter_input(1, 'sort', 513);
-if ($_SESSION[$orderCol] !== @$_SESSION['prevOrderCol']){
+if ($_SESSION['$orderCol'] !== $_SESSION['prevOrderCol']){
     $sort = 'ASC';
 }
-$sort = ($sort === 'ASC') ? 'DESC' : 'ASC';
-$_SESSION['prevorderCol'] = $_SESSION['$orderCol'];
-
 //filter
-$filter = filter_input(1, 'filter', FILTER_SANITIZE_STRING);
+$filter = filter_input(1, 'filter', 513);
 //$filter = ($filter) ? $filter : '%'; 
 $rows = getAllData('tb_cities', $columnNames, [$_SESSION['$orderCol']], $sort, $filter);
+
+$sort = ($sort === 'ASC') ? 'DESC' : 'ASC';
+$_SESSION['prevOrderCol'] = $_SESSION['$orderCol'];
 
 ?>
 
