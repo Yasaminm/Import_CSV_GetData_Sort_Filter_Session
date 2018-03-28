@@ -40,7 +40,12 @@ if ($_SESSION['$orderCol'] !== $_SESSION['prevOrderCol']){
 //filter
 $filter = filter_input(1, 'filter', 513);
 //$filter = ($filter) ? $filter : '%'; 
-$rows = getAllData('tb_cities', $columnNames, [$_SESSION['$orderCol']], $sort, $filter);
+if ($filter) {
+    $_SESSION['$filter'] = $filter;
+}elseif (!isset ($_SESSION['$filter'])){
+    $_SESSION['$filter'] = '%';
+}
+$rows = getAllData('tb_cities', $columnNames, [$_SESSION['$orderCol']], $sort, $_SESSION['$filter']);
 
 $sort = ($sort === 'ASC') ? 'DESC' : 'ASC';
 $_SESSION['prevOrderCol'] = $_SESSION['$orderCol'];
