@@ -1,17 +1,31 @@
 <?php
 require_once './config.php';
 
-function getAllData($tblName, $columnNames = ['*']) {
+function getAllData($tblName, $columnNames = ['*'], $orderColumns = ['id']) {
     $pdo = new PDO('mysql:host=' . HOST . ';dbname=' . DB, USER, PASSWORD);
     $cols = implode(',', $columnNames);
-    $query = "SELECT $cols FROM $tblName";
+    $orderCols = implode(',', $orderColumns);
+    $query = "SELECT $cols FROM $tblName ORDER BY $orderCols";
     $stmt = $pdo->query($query);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $rows;
 }
 
+
+
 $columnNames = ['country', 'province', 'city', 'pop'];
-$rows = getAllData('tb_cities', $columnNames);
+
+$orderCol = filter_input(1, 'order', 513);
+
+$orderCol = ($orderCol) ? $orderCol : 'country';
+
+$rows = getAllData('tb_cities', $columnNames, [$orderCol]);
+ 
+//if(isset($orderCol)){ 
+//$rows = getAllData('tb_cities', $columnNames, [$orderCol]);
+//}else{
+//    $rows = getAllData('tb_cities', $columnNames);
+//}
 ?>
 
 <!DOCTYPE html>
@@ -33,17 +47,22 @@ $rows = getAllData('tb_cities', $columnNames);
                 <thead>
                     <tr>
                         
-                        <th>Land</th>
-                        <th>Region</th>
-                        <th>Stadt</th>
-                        <th>Einwohner</th>
+                        <th><a href="index.php?order=country">Land</a></th>
+                        <th><a href="index.php?order=province">Region</a></th>
+                        <th><a href="index.php?order=city">Stadt</a></th>
+                        <th><a href="index.php?order=pop">Einwohner</a></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($rows as $row) : ?>
                         <tr>
                             <?php foreach ($row as $val) : ?>
-                                <td><?php echo $val; ?></td>
+                                <td><?php 
+                                
+                                echo (is_numeric($val)) ? number_format($val, 2, ',', '.') : $val;
+                                ?>
+                                
+                                </td>
                             <?php endforeach; ?>
                         </tr>
                     <?php endforeach; ?>
