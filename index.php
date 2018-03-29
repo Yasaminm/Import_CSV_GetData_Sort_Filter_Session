@@ -1,10 +1,6 @@
 <?php
-session_start();
-if(!isset($_SESSION['prevOrderCol'])){
-    $_SESSION['prevOrderCol'] = ' ';
-}
-
 require_once './config.php';
+session_start();
 
 function getAllData($tblName, $columnNames = ['*'], $orderColumns = ['id'], $sort = 'ASC', $filter="%") {
     $pdo = new PDO('mysql:host=' . HOST . ';dbname=' . DB, USER, PASSWORD);
@@ -20,6 +16,9 @@ function getAllData($tblName, $columnNames = ['*'], $orderColumns = ['id'], $sor
 $columnNames = ['country', 'province', 'city', 'pop'];
 //order
 $orderCol = filter_input(1, 'order', 513);
+if(!isset($_SESSION['prevOrderCol'])){
+    $_SESSION['prevOrderCol'] = ' ';
+}
 if ($orderCol) {
     $_SESSION['$orderCol'] = $orderCol;
 }elseif (!isset ($_SESSION['$orderCol'])){
@@ -34,19 +33,27 @@ if ($orderCol) {
 
 //sort
 $sort = filter_input(1, 'sort', 513);
+
+if ($sort) {
 if ($_SESSION['$orderCol'] !== $_SESSION['prevOrderCol']){
     $sort = 'ASC';
 }
+$_SESSION['sort'] = $sort;
+}elseif (!isset ($_SESSION['sort'])){
+    $_SESSION['sort'] = 'ASC';
+}
+
+
 //filter
 $filter = filter_input(1, 'filter', 513);
 //$filter = ($filter) ? $filter : '%'; 
 if ($filter) {
     $_SESSION['$filter'] = $filter;
 }elseif (!isset ($_SESSION['$filter'])){
-    $_SESSION['$filter'] = '%';
+    $_SESSION['$filter'] = NULL;
 }
-$rows = getAllData('tb_cities', $columnNames, [$_SESSION['$orderCol']], $sort, $_SESSION['$filter']);
 
+$rows = getAllData('tb_cities', $columnNames, [$_SESSION['$orderCol']], $_SESSION['sort'] , $_SESSION['$filter']);
 $sort = ($sort === 'ASC') ? 'DESC' : 'ASC';
 $_SESSION['prevOrderCol'] = $_SESSION['$orderCol'];
 
@@ -69,7 +76,7 @@ $_SESSION['prevOrderCol'] = $_SESSION['$orderCol'];
         <div class="container">
             <form cla="form-inline" method="get">
                 <label>
-                    <input placeholder="City" class="form-control" type="text" name="filter" value="<?php echo $filter ?>">
+                    <input placeholder="City" class="form-control" type="text" name="filter" value="<?php echo $_SESSION['$filter'] ?>">
                 </label>
                 <button class="btn btn-primary">Filtern</button>
             </form>
@@ -77,10 +84,10 @@ $_SESSION['prevOrderCol'] = $_SESSION['$orderCol'];
                 <thead>
                     <tr>
                         
-                        <th><a href="index.php?order=country&sort=<?php echo $sort ?>">Land</a></th>
-                        <th><a href="index.php?order=province&sort=<?php echo $sort ?>">Region</a></th>
-                        <th><a href="index.php?order=city&sort=<?php echo $sort ?>">Stadt</a></th>
-                        <th><a href="index.php?order=pop&sort=<?php echo $sort ?><?php ?>">Einwohner</a></th>
+                        <th><a href="index.php?order=country&sort=<?php echo $sort  ?>">Land</a></th>
+                        <th><a href="index.php?order=province&sort=<?php echo $sort  ?>">Region</a></th>
+                        <th><a href="index.php?order=city&sort=<?php echo $sort  ?>">Stadt</a></th>
+                        <th><a href="index.php?order=pop&sort=<?php echo $sort  ?><?php ?>">Einwohner</a></th>
                     </tr>
                 </thead>
                 <tbody>
